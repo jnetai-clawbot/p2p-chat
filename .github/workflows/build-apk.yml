@@ -32,7 +32,7 @@ jobs:
 
     - name: Copy APK to Project Folder
       run: |
-        cp app/build/outputs/apk/release/app-release-unsigned.apk apk/p2p-chat.apk
+        find app/build/outputs/apk/release/ -name "*.apk" -exec cp {} apk/p2p-chat.apk \;
         # Note: In a real setup, we would sign the APK here using secrets.
         # For this mission, we'll provide the unsigned APK as requested.
 
