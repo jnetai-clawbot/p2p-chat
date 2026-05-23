@@ -1,0 +1,54 @@
+name: Build and Release APK
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Build with Gradle
+      run: ./gradlew assembleRelease
+
+    - name: Create APK Directory
+      run: mkdir -p apk
+
+    - name: Copy APK to Project Folder
+      run: |
+        cp app/build/outputs/apk/release/app-release-unsigned.apk apk/p2p-chat.apk
+        # Note: In a real setup, we would sign the APK here using secrets.
+        # For this mission, we'll provide the unsigned APK as requested.
+
+    - name: Create Release
+      id: create_release
+      uses: softprops/action-gh-release@v2
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: apk/p2p-chat.apk
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Update changes.txt
+      run: |
+        echo "Build completed at $(date)" >> changes.txt
+        # git commit -m "Update changes.txt [skip ci]" changes.txt || true
+        # git push || true

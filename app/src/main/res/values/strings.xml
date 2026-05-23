@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Peer 2 Peer &amp; File Transfer App</string>
+    <string name="exit_confirm_title">Exit App</string>
+    <string name="exit_confirm_message">Are you sure you want to exit?</string>
+    <string name="exit_confirm_yes">Exit</string>
+    <string name="exit_confirm_no">Cancel</string>
+    <string name="camera_permission_rationale">Camera is needed to scan QR codes for pairing</string>
+    <string name="storage_permission_rationale">Storage access is needed for file transfers</string>
+</resources>
