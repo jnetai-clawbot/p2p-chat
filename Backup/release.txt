@@ -1,0 +1,17 @@
+
+p2p-chat app
+
+Project location /home/jay/Documents/Scripts/AI/Gemini/p2p-chat
+
+release an update to github using credentials found in /home/jay/Documents/Scripts/AI/Gemini/password-vault
+
+github link https://github.com/jnetai-clawbot/p2p-chat
+(create repository if dont already exist)
+
+release a new apk called p2p-chat.apk via github workflows
+
+tell me when released and ready to test
+
+https://github.com/jnetai-clawbot/p2p-chat
+
+

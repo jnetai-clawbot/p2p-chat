@@ -1,4 +1,11 @@
 Project implementation started
+Update 1.0.7
+- Fixed: Received files now correctly save to the public "Downloads/P2PChat" folder.
+- Added: Settings Menu with toggles for Auto Reconnect, File Transfers, and Nudge Vibration.
+- Added: "End Chat" button to gracefully disconnect from a peer.
+- Added: Auto-reconnect logic that attempts to restore lost connections.
+- Incremented version to 1.0.7 (v7).
+
 Update 1.0.6
 - Added: "About" section with creator info and version display.
 - Added: "Check for Update" button linking to latest GitHub release.

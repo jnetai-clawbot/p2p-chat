@@ -11,6 +11,8 @@
     let conn = null;
     let localId = null;
     let qrCode = null;
+    let remotePeerId = null;
+    let isUserEndingChat = false;
 
     const elements = {
         localId: document.getElementById('local-id'),
@@ -28,19 +30,30 @@
         sendBtn: document.getElementById('send-btn'),
         pickFileBtn: document.getElementById('pick-file-btn'),
         nudgeBtn: document.getElementById('nudge-btn'),
+        endChatBtn: document.getElementById('end-chat-btn'),
         debugLog: document.getElementById('debug-log'),
         progressArea: document.getElementById('transfer-progress'),
         progressFill: document.getElementById('progress-fill'),
         progressText: document.getElementById('progress-text'),
         qrContainer: document.getElementById('qrcode-container'),
+        openSettingsBtn: document.getElementById('open-settings-btn'),
+        closeSettingsBtn: document.getElementById('close-settings-btn'),
+        settingsModal: document.getElementById('settings-modal'),
         checkUpdateBtn: document.getElementById('check-update-btn'),
-        shareAppBtn: document.getElementById('share-app-btn'),
-        appVersionSpan: document.getElementById('app-version')
+        shareAppBtn: document.getElementById('share-app-btn')
+    };
+
+    const settings = {
+        autoReconnect: document.getElementById('setting-auto-reconnect'),
+        allowFiles: document.getElementById('setting-allow-files'),
+        vibrate: document.getElementById('setting-vibrate'),
+        debug: document.getElementById('setting-debug')
     };
 
     const GITHUB_REPO_URL = 'https://github.com/jnetai-clawbot/p2p-chat/releases/latest';
 
     function log(msg, isError = false) {
+        if (!settings.debug.checked && !isError) return;
         const time = new Date().toLocaleTimeString();
         const entry = document.createElement('div');
         entry.textContent = `[${time}] ${msg}`;
@@ -52,93 +65,77 @@
     }
 
     function generateRandomId() {
-        // Generate a 4-8 digit numeric Pin/ID
         return Math.floor(1000 + Math.random() * 999999).toString();
     }
 
-    function initPeer(requestedId = null) {
-        if (peer) {
-            peer.destroy();
-        }
-
-        const idToUse = requestedId || generateRandomId();
-        log(`Initializing Peer with ID: ${idToUse}`);
+    function initPeer() {
+        if (peer) peer.destroy();
+        const idToUse = generateRandomId();
+        log(`Initializing Peer: ${idToUse}`);
         
-        peer = new Peer(idToUse, {
-            config: { iceServers: iceServers },
-            debug: 1
-        });
+        peer = new Peer(idToUse, { config: { iceServers: iceServers }, debug: 1 });
 
         peer.on('open', (id) => {
             localId = id;
             elements.localId.textContent = id;
             updateStatus('Disconnected', 'status-disconnected');
-            log(`Peer opened with ID: ${id}`);
             generateQrCode(id);
         });
 
         peer.on('connection', (connection) => {
             if (conn) {
-                log('Multiple connections not supported, closing new one');
                 connection.close();
                 return;
             }
-            log(`Incoming connection from: ${connection.peer}`);
             setupConnection(connection);
         });
 
         peer.on('error', (err) => {
-            log(`Peer error: ${err.type} - ${err.message}`, true);
-            if (err.type === 'unavailable-id') {
-                log('ID already taken, retrying with new ID...');
-                initPeer();
-            } else if (window.AndroidBridge) {
-                window.AndroidBridge.onError('P001', err.message);
-            }
+            log(`Peer error: ${err.type}`, true);
+            if (err.type === 'unavailable-id') initPeer();
         });
 
         peer.on('disconnected', () => {
-            log('Peer disconnected from server');
-            updateStatus('Offline (Disconnected)', 'status-disconnected');
+            log('Peer server disconnected');
+            updateStatus('Offline (Server)', 'status-disconnected');
         });
     }
 
     function generateQrCode(text) {
         elements.qrContainer.innerHTML = '';
         qrCode = new QRCode(elements.qrContainer, {
-            text: text,
-            width: 150,
-            height: 150,
-            colorDark: "#000000",
-            colorLight: "#ffffff",
+            text: text, width: 150, height: 150,
+            colorDark: "#000000", colorLight: "#ffffff",
             correctLevel: QRCode.CorrectLevel.H
         });
     }
 
     function setupConnection(connection) {
         conn = connection;
+        remotePeerId = conn.peer;
+        isUserEndingChat = false;
         
         conn.on('open', () => {
-            log(`Data channel open with: ${conn.peer}`);
+            log(`Connected to: ${conn.peer}`);
             updateStatus(`Connected to ${conn.peer}`, 'status-connected');
             showChat();
+            addMessage(`System: Connected to ${conn.peer}`, 'system');
         });
 
-        conn.on('data', (data) => {
-            handleReceivedData(data);
-        });
+        conn.on('data', handleReceivedData);
 
         conn.on('close', () => {
             log('Connection closed');
             updateStatus('Disconnected', 'status-disconnected');
-            hideChat();
-            conn = null;
-        });
-
-        conn.on('error', (err) => {
-            log(`Connection error: ${err.message}`, true);
-            if (window.AndroidBridge) {
-                window.AndroidBridge.onError('C001', err.message);
+            addMessage('System: Connection closed', 'system');
+            
+            if (!isUserEndingChat && settings.autoReconnect.checked && remotePeerId) {
+                log(`Attempting auto-reconnect to ${remotePeerId}...`);
+                setTimeout(() => connectToPeer(remotePeerId), 3000);
+            } else {
+                hideChat();
+                conn = null;
+                remotePeerId = null;
             }
         });
     }
@@ -147,19 +144,16 @@
         if (typeof data === 'string') {
             try {
                 const msg = JSON.parse(data);
-                if (msg.type === 'chat') {
-                    addMessage(msg.text, 'received');
-                } else if (msg.type === 'nudge') {
-                    handleNudge();
-                }
-            } catch (e) {
-                addMessage(data, 'received');
-            }
+                if (msg.type === 'chat') addMessage(msg.text, 'received');
+                else if (msg.type === 'nudge') handleNudge();
+            } catch (e) { addMessage(data, 'received'); }
         } else if (typeof data === 'object' && data.type === 'file') {
-            log(`Received file: ${data.name} (${data.size} bytes)`);
-            if (window.AndroidBridge) {
-                window.AndroidBridge.saveReceivedFile(data.name, data.data);
+            if (!settings.allowFiles.checked) {
+                log(`Rejected file: ${data.name} (File transfers disabled)`);
+                return;
             }
+            log(`Saving file: ${data.name}`);
+            if (window.AndroidBridge) window.AndroidBridge.saveReceivedFile(data.name, data.data);
             addMessage(`Received file: ${data.name}`, 'system');
         }
     }
@@ -189,135 +183,64 @@
         elements.connectSection.classList.remove('hidden');
     }
 
-    function sendMessage() {
-        const text = elements.messageInput.value.trim();
-        if (text && conn && conn.open) {
-            const msg = { type: 'chat', text: text };
-            conn.send(JSON.stringify(msg));
-            addMessage(text, 'sent');
-            elements.messageInput.value = '';
-        }
+    function connectToPeer(id) {
+        if (!id) return;
+        log(`Connecting to ${id}...`);
+        updateStatus(`Connecting...`, 'status-connecting');
+        setupConnection(peer.connect(id, { reliable: true }));
     }
 
     function handleNudge() {
         document.body.classList.add('shake');
-        if (window.AndroidBridge) {
-            window.AndroidBridge.vibrate(500);
-        }
+        if (settings.vibrate.checked && window.AndroidBridge) window.AndroidBridge.vibrate(500);
         addMessage('Nudge received!', 'system');
         setTimeout(() => document.body.classList.remove('shake'), 500);
     }
 
     // Bridge hooks
-    window.onQrScanResult = function(result) {
-        log(`QR scan result: ${result}`);
-        elements.remoteIdInput.value = result;
-        connectToPeer(result);
-    };
-
-    window.onQrScanError = function(error) {
-        log(`QR scan error: ${error}`, true);
-    };
-
-    window.onFilePicked = function(fileObj) {
-        if (!fileObj) return;
-        log(`File picked: ${fileObj.name} (${fileObj.size} bytes)`);
-        if (conn && conn.open) {
-            const data = {
-                type: 'file',
-                name: fileObj.name,
-                size: fileObj.size,
-                mimeType: fileObj.mimeType,
-                data: fileObj.data
-            };
-            conn.send(data);
-            addMessage(`Sent file: ${fileObj.name}`, 'system');
+    window.onQrScanResult = (res) => { elements.remoteIdInput.value = res; connectToPeer(res); };
+    window.onFilePicked = (file) => {
+        if (file && conn && conn.open) {
+            conn.send({ type: 'file', name: file.name, size: file.size, data: file.data });
+            addMessage(`Sent: ${file.name}`, 'system');
         }
     };
+    window.onFileSaved = (path) => addMessage(`File saved to Downloads/P2PChat`, 'system');
 
-    window.onFilePickedError = function(error) {
-        log(`File pick error: ${error}`, true);
-    };
-
-    window.onFileSaved = function(path, size) {
-        addMessage(`File saved to: ${path}`, 'system');
-    };
-
-    window.onFileSavedError = function(error) {
-        log(`File save error: ${error}`, true);
-    };
-
-    function connectToPeer(id) {
-        if (!id) return;
-        log(`Connecting to: ${id}...`);
-        updateStatus(`Connecting to ${id}...`, 'status-connecting');
-        const connection = peer.connect(id, {
-            reliable: true
-        });
-        setupConnection(connection);
-    }
-
-    // Event Listeners
-    elements.connectBtn.addEventListener('click', () => {
-        const id = elements.remoteIdInput.value.trim();
-        connectToPeer(id);
-    });
-
-    elements.sendBtn.addEventListener('click', sendMessage);
-    elements.messageInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendMessage();
-    });
-
-    elements.scanQrBtn.addEventListener('click', () => {
-        if (window.AndroidBridge) {
-            window.AndroidBridge.scanQrCode();
-        } else {
-            log('QR Scanner not available in browser', true);
+    // UI Events
+    elements.connectBtn.addEventListener('click', () => connectToPeer(elements.remoteIdInput.value.trim()));
+    elements.sendBtn.addEventListener('click', () => {
+        const text = elements.messageInput.value.trim();
+        if (text && conn && conn.open) {
+            conn.send(JSON.stringify({ type: 'chat', text }));
+            addMessage(text, 'sent');
+            elements.messageInput.value = '';
         }
     });
-
-    elements.newIdBtn.addEventListener('click', () => {
-        log('Generating new Peer ID...');
-        initPeer();
+    elements.endChatBtn.addEventListener('click', () => {
+        isUserEndingChat = true;
+        if (conn) conn.close();
     });
-
+    elements.openSettingsBtn.addEventListener('click', () => elements.settingsModal.classList.remove('hidden'));
+    elements.closeSettingsBtn.addEventListener('click', () => elements.settingsModal.classList.add('hidden'));
+    elements.newIdBtn.addEventListener('click', initPeer);
+    elements.scanQrBtn.addEventListener('click', () => window.AndroidBridge && window.AndroidBridge.scanQrCode());
     elements.copyIdBtn.addEventListener('click', () => {
         if (localId) {
-            if (window.AndroidBridge) {
-                window.AndroidBridge.copyToClipboard(localId);
-            } else {
-                navigator.clipboard.writeText(localId);
-            }
+            if (window.AndroidBridge) window.AndroidBridge.copyToClipboard(localId);
             elements.copyIdBtn.textContent = '✅';
             setTimeout(() => elements.copyIdBtn.textContent = '📋', 2000);
         }
     });
-
-    elements.pickFileBtn.addEventListener('click', () => {
-        if (window.AndroidBridge) {
-            window.AndroidBridge.pickFile();
-        }
-    });
-
+    elements.pickFileBtn.addEventListener('click', () => window.AndroidBridge && window.AndroidBridge.pickFile());
     elements.nudgeBtn.addEventListener('click', () => {
         if (conn && conn.open) {
             conn.send(JSON.stringify({ type: 'nudge' }));
             addMessage('Nudge sent!', 'system');
         }
     });
+    elements.checkUpdateBtn.addEventListener('click', () => window.open(GITHUB_REPO_URL, '_blank'));
+    elements.shareAppBtn.addEventListener('click', () => window.AndroidBridge && window.AndroidBridge.shareApp(GITHUB_REPO_URL));
 
-    elements.checkUpdateBtn.addEventListener('click', () => {
-        window.open(GITHUB_REPO_URL, '_blank');
-    });
-
-    elements.shareAppBtn.addEventListener('click', () => {
-        if (window.AndroidBridge) {
-            window.AndroidBridge.shareApp(GITHUB_REPO_URL);
-        } else {
-            log('Share feature only available in app', true);
-        }
-    });
-
-    // Start
     initPeer();
 })();

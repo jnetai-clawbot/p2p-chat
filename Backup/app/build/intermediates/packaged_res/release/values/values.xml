@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="dark_background">#FF0F0F1A</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="white">#FFFFFFFF</color>
+    <string name="app_name">Peer 2 Peer &amp; File Transfer App</string>
+    <string name="camera_permission_rationale">Camera is needed to scan QR codes for pairing</string>
+    <string name="exit_confirm_message">Are you sure you want to exit?</string>
+    <string name="exit_confirm_no">Cancel</string>
+    <string name="exit_confirm_title">Exit App</string>
+    <string name="exit_confirm_yes">Exit</string>
+    <string name="storage_permission_rationale">Storage access is needed for file transfers</string>
+    <style name="Theme.P2PChat" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#1a1a2e</item>
+        <item name="colorPrimaryVariant">#16213e</item>
+        <item name="colorOnPrimary">#e2e2e2</item>
+        <item name="colorSecondary">#0f3460</item>
+        <item name="colorSecondaryVariant">#1a1a2e</item>
+        <item name="colorOnSecondary">#e94560</item>
+        <item name="android:colorBackground">#1a1a2e</item>
+        <item name="android:statusBarColor">#0f0f1a</item>
+        <item name="android:navigationBarColor">#0f0f1a</item>
+    </style>
+</resources>

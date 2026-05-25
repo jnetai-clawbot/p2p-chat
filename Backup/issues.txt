@@ -1,0 +1,15 @@
+issues are it tries to use a webpage
+gives error:
+
+Web page not available
+The web page at https://appassets.androidplatform.net/web/index.html could not be loaded because:
+
+net::ERR_INVALID_RESPONSE
+
+fix it!
+
+(it should use no online web site, only use public turn server to get the ip it needs to do p2p)
+
+release as a new update using the same keystore so it can update without requiring uninstallation 1st)
+
+

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>P2P Chat & File Transfer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <header>
+            <h1>Peer 2 Peer Chat</h1>
+            <div id="connection-status" class="status-disconnected">Disconnected</div>
+        </header>
+
+        <main>
+            <section id="id-section">
+                <div class="card">
+                    <label>Your Peer ID / Pin:</label>
+                    <div class="id-display">
+                        <span id="local-id">Generating...</span>
+                        <button id="copy-id-btn" class="icon-btn" title="Copy ID">📋</button>
+                    </div>
+                    <div id="qrcode-container" class="qr-box"></div>
+                    <button id="new-id-btn" class="secondary-btn full-width">Get New ID / QR</button>
+                    <button id="scan-qr-btn" class="primary-btn full-width">Scan QR to Connect</button>
+                </div>
+            </section>
+
+            <section id="connect-section">
+                <div class="card">
+                    <label for="remote-id-input">Connect to Peer ID / Pin:</label>
+                    <div class="input-group">
+                        <input type="text" id="remote-id-input" placeholder="Enter ID or Pin">
+                        <button id="connect-btn" class="primary-btn">Connect</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="chat-section" class="hidden">
+                <div id="chat-messages"></div>
+                <div id="transfer-progress" class="hidden">
+                    <div class="progress-bar"><div id="progress-fill"></div></div>
+                    <span id="progress-text">Sending file...</span>
+                </div>
+                <div id="input-area">
+                    <button id="pick-file-btn" class="icon-btn">📎</button>
+                    <input type="text" id="message-input" placeholder="Type a message...">
+                    <button id="send-btn" class="primary-btn">Send</button>
+                </div>
+                <div id="nudge-area">
+                    <button id="nudge-btn" class="secondary-btn">Nudge</button>
+                </div>
+            </section>
+
+            <section id="about-section">
+                <div class="card about-card">
+                    <p>Made by <a href="https://jnetai.com" target="_blank">jnetai.com</a></p>
+                    <p>Version: <span id="app-version">1.0.6</span></p>
+                    <div class="button-group">
+                        <button id="check-update-btn" class="secondary-btn small-btn">Check for Update</button>
+                        <button id="share-app-btn" class="secondary-btn small-btn">Share App</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div id="debug-log"></div>
+        </footer>
+    </div>
+
+    <script src="js/peerjs.min.js"></script>
+    <script src="js/qrcode.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
