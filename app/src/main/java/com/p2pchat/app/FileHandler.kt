@@ -89,7 +89,7 @@ object FileHandler {
                 val baseName = outFile.nameWithoutExtension
                 val ext = outFile.extension
                 while (outFile.exists()) {
-                    outFile = File(p2pDir, "${baseName}_$counter.$ext")
+                    outFile = File(saveDir, "${baseName}_$counter.$ext")
                     counter++
                 }
                 
