@@ -12,4 +12,6 @@ release a new apk called p2p-chat.apk via github workflows
 
 tell me when released and ready to test
 
+https://github.com/jnetai-clawbot/p2p-chat
+
 

@@ -11,8 +11,8 @@ android {
         applicationId = "com.p2pchat.app"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.0.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -21,9 +21,9 @@ android {
             val keystorePath = rootProject.file("p2pchat.keystore")
             if (keystorePath.exists()) {
                 storeFile = keystorePath
-                storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "p2pchat"
-                keyAlias = System.getenv("KEY_ALIAS") ?: "p2pchat"
-                keyPassword = System.getenv("KEY_PASSWORD") ?: "p2pchat"
+                storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "4daptBXz0Hp6z8kxcsDhvQVx"
+                keyAlias = System.getenv("KEY_ALIAS") ?: "ciphervault"
+                keyPassword = System.getenv("KEY_PASSWORD") ?: "4daptBXz0Hp6z8kxcsDhvQVx"
             }
         }
     }

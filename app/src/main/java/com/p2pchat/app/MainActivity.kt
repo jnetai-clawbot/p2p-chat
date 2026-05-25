@@ -58,8 +58,8 @@ class MainActivity : AppCompatActivity() {
         ErrorLogger.init(this)
         FileHandler.init(this)
         ErrorLogger.i("MainActivity", "onCreate started", mapOf(
-            "versionCode" to "1",
-            "versionName" to "1.0.0"
+            "versionCode" to "2",
+            "versionName" to "1.0.1"
         ))
 
         webView = WebView(this).apply {
