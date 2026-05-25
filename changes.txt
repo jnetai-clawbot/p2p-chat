@@ -1,8 +1,8 @@
 Project implementation started
-Update 1.0.1
+Update 1.0.3
 - Fixed: Web page not available error by adding missing local web assets.
 - Fixed: App now operates entirely offline for assets, using WebViewAssetLoader.
 - Added: PeerJS for P2P communication via STUN servers.
 - Added: Signing configuration using release keystore for seamless updates.
-- Incremented version to 1.0.1 (v2).
+- Incremented version to 1.0.3 (v3).
 
