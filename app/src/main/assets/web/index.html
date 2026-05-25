@@ -16,20 +16,22 @@
         <main>
             <section id="id-section">
                 <div class="card">
-                    <label>Your ID:</label>
+                    <label>Your Peer ID / Pin:</label>
                     <div class="id-display">
                         <span id="local-id">Generating...</span>
-                        <button id="copy-id-btn" class="icon-btn">📋</button>
+                        <button id="copy-id-btn" class="icon-btn" title="Copy ID">📋</button>
                     </div>
-                    <button id="scan-qr-btn" class="primary-btn">Scan QR to Connect</button>
+                    <div id="qrcode-container" class="qr-box"></div>
+                    <button id="new-id-btn" class="secondary-btn full-width">Get New ID / QR</button>
+                    <button id="scan-qr-btn" class="primary-btn full-width">Scan QR to Connect</button>
                 </div>
             </section>
 
             <section id="connect-section">
                 <div class="card">
-                    <label for="remote-id-input">Connect to Peer ID:</label>
+                    <label for="remote-id-input">Connect to Peer ID / Pin:</label>
                     <div class="input-group">
-                        <input type="text" id="remote-id-input" placeholder="Enter Peer ID or use Scan">
+                        <input type="text" id="remote-id-input" placeholder="Enter ID or Pin">
                         <button id="connect-btn" class="primary-btn">Connect</button>
                     </div>
                 </div>
@@ -58,6 +60,7 @@
     </div>
 
     <script src="js/peerjs.min.js"></script>
+    <script src="js/qrcode.min.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

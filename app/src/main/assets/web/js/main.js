@@ -10,12 +10,14 @@
     let peer = null;
     let conn = null;
     let localId = null;
+    let qrCode = null;
 
     const elements = {
         localId: document.getElementById('local-id'),
         remoteIdInput: document.getElementById('remote-id-input'),
         connectBtn: document.getElementById('connect-btn'),
         scanQrBtn: document.getElementById('scan-qr-btn'),
+        newIdBtn: document.getElementById('new-id-btn'),
         copyIdBtn: document.getElementById('copy-id-btn'),
         status: document.getElementById('connection-status'),
         chatSection: document.getElementById('chat-section'),
@@ -29,7 +31,8 @@
         debugLog: document.getElementById('debug-log'),
         progressArea: document.getElementById('transfer-progress'),
         progressFill: document.getElementById('progress-fill'),
-        progressText: document.getElementById('progress-text')
+        progressText: document.getElementById('progress-text'),
+        qrContainer: document.getElementById('qrcode-container')
     };
 
     function log(msg, isError = false) {
@@ -43,11 +46,20 @@
         }
     }
 
-    function initPeer() {
-        const customId = window.AndroidBridge ? window.AndroidBridge.getDeviceId() : null;
-        log(`Initializing Peer with ID: ${customId || 'auto'}`);
+    function generateRandomId() {
+        // Generate a 4-8 digit numeric Pin/ID
+        return Math.floor(1000 + Math.random() * 999999).toString();
+    }
+
+    function initPeer(requestedId = null) {
+        if (peer) {
+            peer.destroy();
+        }
+
+        const idToUse = requestedId || generateRandomId();
+        log(`Initializing Peer with ID: ${idToUse}`);
         
-        peer = new Peer(customId, {
+        peer = new Peer(idToUse, {
             config: { iceServers: iceServers },
             debug: 1
         });
@@ -57,6 +69,7 @@
             elements.localId.textContent = id;
             updateStatus('Disconnected', 'status-disconnected');
             log(`Peer opened with ID: ${id}`);
+            generateQrCode(id);
         });
 
         peer.on('connection', (connection) => {
@@ -71,14 +84,29 @@
 
         peer.on('error', (err) => {
             log(`Peer error: ${err.type} - ${err.message}`, true);
-            if (window.AndroidBridge) {
+            if (err.type === 'unavailable-id') {
+                log('ID already taken, retrying with new ID...');
+                initPeer();
+            } else if (window.AndroidBridge) {
                 window.AndroidBridge.onError('P001', err.message);
             }
         });
 
         peer.on('disconnected', () => {
             log('Peer disconnected from server');
-            updateStatus('Offline (Disconnected from Server)', 'status-disconnected');
+            updateStatus('Offline (Disconnected)', 'status-disconnected');
+        });
+    }
+
+    function generateQrCode(text) {
+        elements.qrContainer.innerHTML = '';
+        qrCode = new QRCode(elements.qrContainer, {
+            text: text,
+            width: 150,
+            height: 150,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
         });
     }
 
@@ -122,9 +150,6 @@
             } catch (e) {
                 addMessage(data, 'received');
             }
-        } else if (data instanceof ArrayBuffer || data instanceof Blob) {
-            // This is handled via custom protocol if we send metadata first
-            log('Received raw binary data');
         } else if (typeof data === 'object' && data.type === 'file') {
             log(`Received file: ${data.name} (${data.size} bytes)`);
             if (window.AndroidBridge) {
@@ -244,6 +269,11 @@
         } else {
             log('QR Scanner not available in browser', true);
         }
+    });
+
+    elements.newIdBtn.addEventListener('click', () => {
+        log('Generating new Peer ID...');
+        initPeer();
     });
 
     elements.copyIdBtn.addEventListener('click', () => {

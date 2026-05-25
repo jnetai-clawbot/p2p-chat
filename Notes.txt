@@ -1,0 +1,38 @@
+P2P Chat App Fix and Release Completed: 
+  Summarizing the fixes and release of the P2P chat app version 1.0.3.
+
+
+✦ I have fixed the issue where the P2P Chat app failed to load its web assets and prepared a new
+  release (v1.0.3).
+
+  Key Changes:
+   - Restored Web Assets: Created and bundled missing index.html, style.css, and js/main.js into
+     app/src/main/assets/web. This ensures the app's UI and logic are entirely local, resolving
+     the net::ERR_INVALID_RESPONSE error.
+   - P2P Implementation: Integrated PeerJS for peer-to-peer communication, configured to use
+     public Google STUN servers for discovery as requested.
+   - Seamless Updates: 
+       - Incremented versionCode to 3 and versionName to 1.0.3.
+       - Configured the build system to use the ciphervault keystore for signing, ensuring users
+         can update without uninstalling the previous version.
+   - Workflow Improvements: Updated .github/workflows/build-apk.yml to support signing secrets
+     (KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD).
+
+  Deployment:
+  The changes have been committed and pushed to https://github.com/jnetai-clawbot/p2p-chat
+  (https://github.com/jnetai-clawbot/p2p-chat). A new tag v1.0.3 was created to trigger the
+  release workflow.
+
+  Note for Testing: 
+  To get a signed APK from the GitHub Workflow, you should add the following secrets to your
+  repository:
+   - KEYSTORE_PASSWORD: The password found in password-vault.
+   - KEY_ALIAS: ciphervault
+   - KEY_PASSWORD: Same as keystore password.
+
+  The app is now ready for testing.
+
+
+
+
+

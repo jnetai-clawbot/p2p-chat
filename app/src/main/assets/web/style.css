@@ -86,7 +86,26 @@ label {
     border-radius: var(--border-radius);
     font-family: monospace;
     font-size: 1.2rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.qr-box {
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0;
+    padding: 0.5rem;
+    background: white;
+    border-radius: 4px;
+}
+
+.qr-box img {
+    max-width: 150px;
+    height: auto;
+}
+
+.full-width {
+    width: 100%;
+    margin-top: 0.5rem;
 }
 
 .input-group {
@@ -96,6 +115,7 @@ label {
 
 input[type="text"] {
     flex: 1;
+    min-width: 0; /* Allow shrinking */
     padding: 0.75rem;
     border: 1px solid #ddd;
     border-radius: var(--border-radius);
@@ -103,6 +123,7 @@ input[type="text"] {
 }
 
 button {
+    white-space: nowrap; /* Prevent button text wrapping */
     padding: 0.75rem 1rem;
     border: none;
     border-radius: var(--border-radius);
