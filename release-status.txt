@@ -1,0 +1,14 @@
+# Release Status - v1.0.9
+## Completed successfully ✅
+
+**Release:** https://github.com/jnetai-clawbot/p2p-chat/releases/tag/v1.0.9
+**APK:** https://github.com/jnetai-clawbot/p2p-chat/releases/download/v1.0.9/p2p-chat.apk (21.9 MB)
+
+## Changes in v1.0.9
+- Settings persistence via localStorage (settings survive app restarts)
+- Empty save folder now saves files directly to Downloads root (no subfolder)
+- Screen lock prevention enabled by default with toggle in Settings
+
+## Build info
+- Workflow run: https://github.com/jnetai-clawbot/p2p-chat/actions/runs/26382375648
+- Signed with release keystore (same as previous versions - seamless update)

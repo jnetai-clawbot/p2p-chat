@@ -1,4 +1,8 @@
 Project implementation started
+Update 1.0.10
+- Renamed release APK to p2p-chat.apk
+- Updated version to 1.0.10
+
 Update 1.0.9
 - Added: Settings persistence via localStorage (settings survive app restarts).
 - Added: Empty save folder now saves files directly to Downloads root (no subfolder).
