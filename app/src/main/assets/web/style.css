@@ -108,6 +108,30 @@ label {
     margin-top: 0.5rem;
 }
 
+.about-card {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--secondary-color);
+}
+
+.about-card a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.button-group {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 0.75rem;
+}
+
+.small-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+}
+
 .input-group {
     display: flex;
     gap: 0.5rem;

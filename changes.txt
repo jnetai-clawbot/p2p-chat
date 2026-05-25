@@ -1,4 +1,11 @@
 Project implementation started
+Update 1.0.6
+- Added: "About" section with creator info and version display.
+- Added: "Check for Update" button linking to latest GitHub release.
+- Added: "Share App" button to easily share the download link.
+- Enhanced: QR Scanner now correctly shows camera preview and supports scanning from Gallery.
+- Incremented version to 1.0.6 (v6).
+
 Update 1.0.5
 - Added: Randomized unique Peer IDs (Pins) instead of static device IDs.
 - Added: QR Code generation for the local ID to simplify pairing.

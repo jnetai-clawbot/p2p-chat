@@ -32,8 +32,13 @@
         progressArea: document.getElementById('transfer-progress'),
         progressFill: document.getElementById('progress-fill'),
         progressText: document.getElementById('progress-text'),
-        qrContainer: document.getElementById('qrcode-container')
+        qrContainer: document.getElementById('qrcode-container'),
+        checkUpdateBtn: document.getElementById('check-update-btn'),
+        shareAppBtn: document.getElementById('share-app-btn'),
+        appVersionSpan: document.getElementById('app-version')
     };
+
+    const GITHUB_REPO_URL = 'https://github.com/jnetai-clawbot/p2p-chat/releases/latest';
 
     function log(msg, isError = false) {
         const time = new Date().toLocaleTimeString();
@@ -298,6 +303,18 @@
         if (conn && conn.open) {
             conn.send(JSON.stringify({ type: 'nudge' }));
             addMessage('Nudge sent!', 'system');
+        }
+    });
+
+    elements.checkUpdateBtn.addEventListener('click', () => {
+        window.open(GITHUB_REPO_URL, '_blank');
+    });
+
+    elements.shareAppBtn.addEventListener('click', () => {
+        if (window.AndroidBridge) {
+            window.AndroidBridge.shareApp(GITHUB_REPO_URL);
+        } else {
+            log('Share feature only available in app', true);
         }
     });
 

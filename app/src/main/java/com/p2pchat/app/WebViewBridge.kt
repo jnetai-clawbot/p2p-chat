@@ -86,6 +86,21 @@ class WebViewBridge(
         ErrorLogger.d("WebViewBridge", "JS log: $message")
     }
 
+    @JavascriptInterface
+    fun shareApp(url: String) {
+        try {
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_SUBJECT, "P2P Chat App")
+                putExtra(Intent.EXTRA_TEXT, "Check out this P2P Chat & File Transfer app: $url")
+            }
+            activity.startActivity(Intent.createChooser(intent, "Share App via"))
+            ErrorLogger.i("WebViewBridge", "App shared")
+        } catch (e: Exception) {
+            ErrorLogger.e("WebViewBridge", "WB005", "Failed to share app", e)
+        }
+    }
+
     fun onQrScanResult(result: String) {
         webView.post {
             webView.evaluateJavascript("window.onQrScanResult('${escapeJs(result)}')", null)
