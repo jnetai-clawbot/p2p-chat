@@ -39,6 +39,10 @@ jobs:
           # APK should already be signed via gradle config, just verify
           ls -la app/build/outputs/apk/release/
 
+      - name: Rename APK
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk app/build/outputs/apk/release/p2p-chat.apk
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
@@ -49,6 +53,6 @@ jobs:
             
             See [changes.txt](https://github.com/jnetai-clawbot/p2p-chat/blob/main/changes.txt) for full changelog.
           files: |
-            app/build/outputs/apk/release/app-release.apk
+            app/build/outputs/apk/release/p2p-chat.apk
           generate_release_notes: false
           token: ${{ secrets.PAT_TOKEN }}
