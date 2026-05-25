@@ -1,4 +1,8 @@
 Project implementation started
+Update 1.0.4
+- Fixed: Web page not available error by correcting WebViewAssetLoader path mapping and URL.
+- Incremented version to 1.0.4 (v4).
+
 Update 1.0.3
 - Fixed: Web page not available error by adding missing local web assets.
 - Fixed: App now operates entirely offline for assets, using WebViewAssetLoader.

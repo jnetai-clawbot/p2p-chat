@@ -58,8 +58,8 @@ class MainActivity : AppCompatActivity() {
         ErrorLogger.init(this)
         FileHandler.init(this)
         ErrorLogger.i("MainActivity", "onCreate started", mapOf(
-            "versionCode" to "3",
-            "versionName" to "1.0.3"
+            "versionCode" to "4",
+            "versionName" to "1.0.4"
         ))
 
         webView = WebView(this).apply {
@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         bridge = WebViewBridge(this, webView)
         bridge.inject()
 
-        webView.loadUrl("https://appassets.androidplatform.net/web/index.html")
+        webView.loadUrl("https://appassets.androidplatform.net/assets/web/index.html")
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity() {
         WebView.setWebContentsDebuggingEnabled(false)
 
         assetLoader = WebViewAssetLoader.Builder()
-            .addPathHandler("/web/", WebViewAssetLoader.AssetsPathHandler(this))
+            .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(this))
             .build()
 
         webView.webViewClient = object : WebViewClient() {
