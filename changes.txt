@@ -1,0 +1,47 @@
+Project implementation started
+Update 1.0.9
+- Added: Settings persistence via localStorage (settings survive app restarts).
+- Added: Empty save folder now saves files directly to Downloads root (no subfolder).
+- Added: Screen lock prevention enabled by default with toggle in Settings.
+- Incremented version to 1.0.9 (v9).
+
+Update 1.0.8
+- Fixed: File visibility issues in Downloads folder by correctly using MediaStore's IS_PENDING flag.
+- Added: Global P2P Support via OpenRelay public TURN servers (works across different networks).
+- Added: Dual IPv4 and IPv6 support for WebRTC connections.
+- Added: "Connection Info" section in Settings showing Public IP and WebRTC status.
+- Added: "Enable TURN" toggle in Settings to allow global connectivity.
+- Incremented version to 1.0.8 (v8).
+
+Update 1.0.7
+- Fixed: Received files now correctly save to the public "Downloads/P2PChat" folder.
+- Added: Settings Menu with toggles for Auto Reconnect, File Transfers, and Nudge Vibration.
+- Added: "End Chat" button to gracefully disconnect from a peer.
+- Added: Auto-reconnect logic that attempts to restore lost connections.
+- Incremented version to 1.0.7 (v7).
+
+Update 1.0.6
+- Added: "About" section with creator info and version display.
+- Added: "Check for Update" button linking to latest GitHub release.
+- Added: "Share App" button to easily share the download link.
+- Enhanced: QR Scanner now correctly shows camera preview and supports scanning from Gallery.
+- Incremented version to 1.0.6 (v6).
+
+Update 1.0.5
+- Added: Randomized unique Peer IDs (Pins) instead of static device IDs.
+- Added: QR Code generation for the local ID to simplify pairing.
+- Added: "Get New ID / QR" button to regenerate the connection Pin.
+- Fixed: UI layout issues where the Connect button was pushed out of view.
+- Incremented version to 1.0.5 (v5).
+
+Update 1.0.4
+- Fixed: Web page not available error by correcting WebViewAssetLoader path mapping and URL.
+- Incremented version to 1.0.4 (v4).
+
+Update 1.0.3
+- Fixed: Web page not available error by adding missing local web assets.
+- Fixed: App now operates entirely offline for assets, using WebViewAssetLoader.
+- Added: PeerJS for P2P communication via STUN servers.
+- Added: Signing configuration using release keystore for seamless updates.
+- Incremented version to 1.0.3 (v3).
+

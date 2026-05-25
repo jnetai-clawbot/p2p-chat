@@ -1,0 +1,7 @@
+-keepattributes Signature
+-keepattributes *Annotation*
+-keepattributes EnclosingMethod
+-keepattributes InnerClasses
+-keep class com.p2pchat.app.** { *; }
+-dontwarn javax.annotation.**
+-keep class com.google.mlkit.** { *; }

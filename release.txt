@@ -1,0 +1,19 @@
+
+p2p-chat app
+
+add file save location default Downloads (if unset and default option when attempting to      change location of auto downloaded files sent by a user) also add a toggle in settings that can disable prevent screen lock (prevent by default screen locking while on app)    
+   
+Project location /home/jay/Documents/Scripts/AI/OpenCode/More-Apps/p2p-chat
+
+Release an update to github using credentials found in /home/jay/Documents/Scripts/AI/Gemini/password-vault
+
+github link https://github.com/jnetai-clawbot/p2p-chat
+(create repository if dont already exist)
+
+Release a new apk called p2p-chat.apk via github workflows (next version should be v1.0.9)
+
+Tell me when released and ready to test
+
+https://github.com/jnetai-clawbot/p2p-chat
+
+

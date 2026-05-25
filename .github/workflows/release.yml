@@ -1,0 +1,53 @@
+name: Build and Release APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Decode Keystore
+        run: |
+          echo '${{ secrets.KEYSTORE_BASE64 }}' | base64 -d > p2pchat.keystore
+
+      - name: Build Release APK
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease
+
+      - name: Sign APK (if not already signed)
+        run: |
+          # APK should already be signed via gradle config, just verify
+          ls -la app/build/outputs/apk/release/
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            ## P2P Chat v${{ github.ref_name }}
+            
+            See [changes.txt](https://github.com/jnetai-clawbot/p2p-chat/blob/main/changes.txt) for full changelog.
+          files: |
+            app/build/outputs/apk/release/app-release.apk
+          generate_release_notes: false
