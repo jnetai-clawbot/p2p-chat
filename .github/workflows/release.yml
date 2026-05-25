@@ -51,3 +51,4 @@ jobs:
           files: |
             app/build/outputs/apk/release/app-release.apk
           generate_release_notes: false
+          token: ${{ secrets.PAT_TOKEN }}
