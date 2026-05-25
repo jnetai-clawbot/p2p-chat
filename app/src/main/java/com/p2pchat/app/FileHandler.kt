@@ -7,9 +7,9 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.provider.OpenableColumns
+import android.webkit.MimeTypeMap
 import java.io.File
 import java.io.FileOutputStream
-import java.io.InputStream
 
 object FileHandler {
     private var appContext: Context? = null
@@ -50,22 +50,31 @@ object FileHandler {
     fun saveReceivedFile(fileName: String, data: ByteArray): File? {
         val ctx = appContext ?: return null
         val sanitizedName = sanitizeFileName(fileName)
+        val extension = File(sanitizedName).extension
+        val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension) ?: "application/octet-stream"
         
         return try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 val contentValues = ContentValues().apply {
                     put(MediaStore.MediaColumns.DISPLAY_NAME, sanitizedName)
-                    put(MediaStore.MediaColumns.MIME_TYPE, "application/octet-stream")
+                    put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
                     put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/P2PChat")
+                    put(MediaStore.MediaColumns.IS_PENDING, 1)
                 }
                 val resolver = ctx.contentResolver
-                val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+                val collection = MediaStore.Downloads.EXTERNAL_CONTENT_URI
+                val uri = resolver.insert(collection, contentValues)
+                
                 uri?.let {
                     resolver.openOutputStream(it)?.use { os ->
                         os.write(data)
                     }
+                    contentValues.clear()
+                    contentValues.put(MediaStore.MediaColumns.IS_PENDING, 0)
+                    resolver.update(it, contentValues, null, null)
+                    
                     ErrorLogger.i("FileHandler", "File saved via MediaStore: $sanitizedName")
-                    File(sanitizedName) // Return dummy file object for path display
+                    File("/sdcard/Download/P2PChat/$sanitizedName") // Log readable path
                 }
             } else {
                 val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
@@ -75,9 +84,9 @@ object FileHandler {
                 var outFile = File(p2pDir, sanitizedName)
                 var counter = 1
                 val baseName = outFile.nameWithoutExtension
-                val extension = outFile.extension
+                val ext = outFile.extension
                 while (outFile.exists()) {
-                    outFile = File(p2pDir, "${baseName}_$counter.$extension")
+                    outFile = File(p2pDir, "${baseName}_$counter.$ext")
                     counter++
                 }
                 

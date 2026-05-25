@@ -1,4 +1,12 @@
 Project implementation started
+Update 1.0.8
+- Fixed: File visibility issues in Downloads folder by correctly using MediaStore's IS_PENDING flag.
+- Added: Global P2P Support via OpenRelay public TURN servers (works across different networks).
+- Added: Dual IPv4 and IPv6 support for WebRTC connections.
+- Added: "Connection Info" section in Settings showing Public IP and WebRTC status.
+- Added: "Enable TURN" toggle in Settings to allow global connectivity.
+- Incremented version to 1.0.8 (v8).
+
 Update 1.0.7
 - Fixed: Received files now correctly save to the public "Downloads/P2PChat" folder.
 - Added: Settings Menu with toggles for Auto Reconnect, File Transfers, and Nudge Vibration.

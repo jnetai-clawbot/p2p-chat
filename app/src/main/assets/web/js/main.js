@@ -1,10 +1,29 @@
 (function() {
-    const iceServers = [
+    const STUN_SERVERS = [
         { urls: 'stun:stun.l.google.com:19302' },
         { urls: 'stun:stun1.l.google.com:19302' },
         { urls: 'stun:stun2.l.google.com:19302' },
         { urls: 'stun:stun3.l.google.com:19302' },
         { urls: 'stun:stun4.l.google.com:19302' }
+    ];
+
+    // Using OpenRelay public TURN servers (example credentials, ideally rotated)
+    const TURN_SERVERS = [
+        {
+            urls: 'turn:openrelay.metered.ca:80',
+            username: 'openrelayproject',
+            credential: 'openrelayproject'
+        },
+        {
+            urls: 'turn:openrelay.metered.ca:443',
+            username: 'openrelayproject',
+            credential: 'openrelayproject'
+        },
+        {
+            urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+            username: 'openrelayproject',
+            credential: 'openrelayproject'
+        }
     ];
 
     let peer = null;
@@ -32,21 +51,21 @@
         nudgeBtn: document.getElementById('nudge-btn'),
         endChatBtn: document.getElementById('end-chat-btn'),
         debugLog: document.getElementById('debug-log'),
-        progressArea: document.getElementById('transfer-progress'),
-        progressFill: document.getElementById('progress-fill'),
-        progressText: document.getElementById('progress-text'),
         qrContainer: document.getElementById('qrcode-container'),
         openSettingsBtn: document.getElementById('open-settings-btn'),
         closeSettingsBtn: document.getElementById('close-settings-btn'),
         settingsModal: document.getElementById('settings-modal'),
         checkUpdateBtn: document.getElementById('check-update-btn'),
-        shareAppBtn: document.getElementById('share-app-btn')
+        shareAppBtn: document.getElementById('share-app-btn'),
+        publicIp: document.getElementById('public-ip'),
+        webrtcSupport: document.getElementById('webrtc-support')
     };
 
     const settings = {
         autoReconnect: document.getElementById('setting-auto-reconnect'),
         allowFiles: document.getElementById('setting-allow-files'),
         vibrate: document.getElementById('setting-vibrate'),
+        useTurn: document.getElementById('setting-use-turn'),
         debug: document.getElementById('setting-debug')
     };
 
@@ -59,21 +78,40 @@
         entry.textContent = `[${time}] ${msg}`;
         if (isError) entry.style.color = '#f44336';
         elements.debugLog.prepend(entry);
-        if (window.AndroidBridge) {
-            window.AndroidBridge.log(msg);
-        }
+        if (window.AndroidBridge) window.AndroidBridge.log(msg);
     }
 
     function generateRandomId() {
         return Math.floor(1000 + Math.random() * 999999).toString();
     }
 
+    function detectNetwork() {
+        elements.webrtcSupport.textContent = (window.RTCPeerConnection) ? "✅ Supported" : "❌ Not Supported";
+        fetch('https://api.ipify.org?format=json')
+            .then(res => res.json())
+            .then(data => { elements.publicIp.textContent = data.ip; })
+            .catch(() => { elements.publicIp.textContent = "Unable to detect"; });
+    }
+
     function initPeer() {
         if (peer) peer.destroy();
         const idToUse = generateRandomId();
+        
+        const iceServers = [...STUN_SERVERS];
+        if (settings.useTurn.checked) {
+            iceServers.push(...TURN_SERVERS);
+            log("Global P2P (TURN) Enabled");
+        }
+
         log(`Initializing Peer: ${idToUse}`);
         
-        peer = new Peer(idToUse, { config: { iceServers: iceServers }, debug: 1 });
+        peer = new Peer(idToUse, { 
+            config: { 
+                iceServers: iceServers,
+                iceTransportPolicy: 'all' // Allows both IPv4 and IPv6
+            }, 
+            debug: 1 
+        });
 
         peer.on('open', (id) => {
             localId = id;
@@ -242,5 +280,8 @@
     elements.checkUpdateBtn.addEventListener('click', () => window.open(GITHUB_REPO_URL, '_blank'));
     elements.shareAppBtn.addEventListener('click', () => window.AndroidBridge && window.AndroidBridge.shareApp(GITHUB_REPO_URL));
 
+    settings.useTurn.addEventListener('change', initPeer);
+
+    detectNetwork();
     initPeer();
 })();

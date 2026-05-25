@@ -11,7 +11,7 @@
         <header>
             <div class="header-content">
                 <h1>Peer 2 Peer Chat</h1>
-                <button id="open-settings-btn" class="icon-btn">⚙️</button>
+                <button id="open-settings-btn" class="icon-btn" title="Settings">⚙️</button>
             </div>
             <div id="connection-status" class="status-disconnected">Disconnected</div>
         </header>
@@ -90,6 +90,13 @@
                             </label>
                         </div>
                         <div class="setting-item">
+                            <span>Enable TURN (Global P2P)</span>
+                            <label class="switch">
+                                <input type="checkbox" id="setting-use-turn" checked>
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                        <div class="setting-item">
                             <span>Debug Logging</span>
                             <label class="switch">
                                 <input type="checkbox" id="setting-debug" checked>
@@ -97,13 +104,18 @@
                             </label>
                         </div>
                     </div>
+                    <div class="connection-info">
+                        <h3>Connection Info</h3>
+                        <p>Public IP: <span id="public-ip">Detecting...</span></p>
+                        <p>WebRTC Support: <span id="webrtc-support">Checking...</span></p>
+                    </div>
                 </div>
             </div>
 
             <section id="about-section">
                 <div class="card about-card">
                     <p>Made by <a href="https://jnetai.com" target="_blank">jnetai.com</a></p>
-                    <p>Version: <span id="app-version">1.0.7</span></p>
+                    <p>Version: <span id="app-version">1.0.8</span></p>
                     <div class="button-group">
                         <button id="check-update-btn" class="secondary-btn small-btn">Check for Update</button>
                         <button id="share-app-btn" class="secondary-btn small-btn">Share App</button>

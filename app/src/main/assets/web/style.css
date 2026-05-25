@@ -242,6 +242,19 @@ input:checked + .slider:before { transform: translateX(20px); }
 .slider.round { border-radius: 24px; }
 .slider.round:before { border-radius: 50%; }
 
+.connection-info {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+}
+
+.connection-info h3 {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
 .about-card { text-align: center; font-size: 0.85rem; color: var(--secondary-color); }
 .about-card a { color: var(--primary-color); text-decoration: none; font-weight: bold; }
 .button-group { display: flex; gap: 0.5rem; justify-content: center; margin-top: 0.75rem; }
